@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------------------
 --
 -- level1_screen.lua
--- Modified by: Your Name
+-- Modified by: John Ngundeng
 -- Date: Month Day, Year
 -- Description: This is the level 1 screen of the game.
 -----------------------------------------------------------------------------------------
@@ -79,7 +79,6 @@ local level1Text
 
 -- Boolean variable that states if user clicked the answer or not
 local alreadyClickedAnswer = false
-
 -----------------------------------------------------------------------------------------
 -- SOUND
 -----------------------------------------------------------------------------------------
@@ -146,6 +145,11 @@ local function LoseScreenTransition( )
     composer.gotoScene( "you_lose", {effect = "zoomInOutFade", time = 1000})
 end 
 
+-- Function that transitions to Win Screen
+local function WinScreenTransition( )        
+    composer.gotoScene( "you_win", {effect = "zoomInOutFade", time = 1000})
+end 
+
 -- The function that displays the equation and determines the answer and the wrong answers
 local function DisplayAddEquation()
     -- local variables to this function
@@ -169,8 +173,9 @@ local function RestartScene()
 
     alreadyClickedAnswer = false
     correct.isVisible = false
+    incorrect.isVisible = false
 
-    livesText.text = "Number of lives = " .. tostring(lives)
+    livesText.text = "Number of lives = " .. lives
     numberCorrectText.text = "Number correct = " .. tostring(numberCorrect)
 
     -- if they have 0 lives, go to the You Lose screen
@@ -181,6 +186,15 @@ local function RestartScene()
         DisplayAddEquation()
         DetermineAnswers()
         DisplayAnswers()
+
+        if (numberCorrect == 3) then
+            composer.gotoScene("you_win")
+        else 
+
+            DisplayAddEquation()
+            DetermineAnswers()
+            DisplayAnswers()
+        end
     end
 end
 
@@ -298,8 +312,6 @@ end
 -----------------------------------------------------------------------------------------
 -- GLOBAL FUNCTIONS
 -----------------------------------------------------------------------------------------
--- playing sound 
-backgroundMusic = audio.play(Sound1)
 -----------------------------------------------------------------------------------------
 -- GLOBAL SCENE FUNCTIONS
 -----------------------------------------------------------------------------------------
@@ -321,16 +333,16 @@ function scene:create( event )
     bkg.height = display.contentHeight
 
     -- create the text object that will hold the add equation. Make it empty for now.
-    addEquationTextObject = display.newText( "", display.contentWidth*1/4, display.contentHeight*2/5, nil, 50 )
+    addEquationTextObject = display.newText( "", display.contentWidth*1/4, display.contentHeight/2, nil, 80 )
 
     -- sets the color of the add equation text object
     addEquationTextObject:setTextColor(155/255, 42/255, 198/255)
 
     -- create the text objects that will hold the correct answer and the wrong answers
-    answerTextObject = display.newText("", display.contentWidth*.4, display.contentHeight/2, nil, 50 )
-    wrongAnswer1TextObject = display.newText("", display.contentWidth*.3, display.contentHeight/2, nil, 50 )
-    wrongAnswer2TextObject = display.newText("", display.contentWidth*.2, display.contentHeight/2, nil, 50 )
-    wrongAnswer3TextObject = display.newText("", display.contentWidth*.1, display.contentHeight/2, nil, 50 )
+    answerTextObject = display.newText("", display.contentWidth*.4, display.contentHeight/1.5, nil, 75 )
+    wrongAnswer1TextObject = display.newText("", display.contentWidth*.3, display.contentHeight/1.5, nil, 75 )
+    wrongAnswer2TextObject = display.newText("", display.contentWidth*.2, display.contentHeight/1.5, nil, 75 )
+    wrongAnswer3TextObject = display.newText("", display.contentWidth*.1, display.contentHeight/1.5, nil, 75 )
     numberCorrectText = display.newText("", display.contentWidth*4/5, display.contentHeight*6/7, nil, 25)
 
     -- create the text object that will hold the number of lives
@@ -386,18 +398,19 @@ function scene:show( event )
     --local sceneGroup = self.view
     local phase = event.phase
 
-
     -----------------------------------------------------------------------------------------
 
     if ( phase == "will" ) then
 
-        -- Called when the scene is still off screen (but is about to come on screen).
+        -- playing sound 
+        backgroundMusic = audio.play(Sound1)
+
     -----------------------------------------------------------------------------------------
 
     elseif ( phase == "did" ) then
 
         -- initialize the number of lives and number correct 
-        lives = 3
+        lives = 2
         numberCorrect = 0
 
         -- listeners to each of the answer text objects
@@ -433,8 +446,9 @@ function scene:hide( event )
     -----------------------------------------------------------------------------------------
 
     elseif ( phase == "did" ) then
-        -- stop the background sound for this screen
-        audio.stop(backgroundMusic)
+    -- stop the background sound for this screen
+   audio.stop(backgroundMusic)
+
     end
 
 end
@@ -446,6 +460,8 @@ function scene:destroy( event )
 
     -- Creating a group that associates objects with the scene
     local sceneGroup = self.view
+    -- stop the background sound for this screen
+   audio.stop(backgroundMusic)
 
     -----------------------------------------------------------------------------------------
     -- Called prior to the removal of scene's view ("sceneGroup").

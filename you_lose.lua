@@ -35,8 +35,9 @@ local bkg
 local Sound1 = audio.loadSound("Sounds/Morty.mp3") 
 local backgroundMusic
 
--- playing sound 
+-- playing sound
 backgroundMusic = audio.play(Sound1)
+
 -----------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 -----------------------------------------------------------------------------------------
